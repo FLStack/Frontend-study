@@ -7,6 +7,9 @@ interface Member {
   name: string;
 }
 
+// 환경 변수 불러오기 (Vercel 환경 변수가 없으면 로컬 localhost:8080을 기본값으로 사용)
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+
 export default function App() {
   const [name, setName] = useState<string>('');
   const [members, setMembers] = useState<Member[]>([]);
@@ -18,7 +21,8 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      const response = await axios.get<Member[]>('http://localhost:8080/api/members');
+      // API_BASE_URL 변수 적용
+      const response = await axios.get<Member[]>(`${API_BASE_URL}/api/members`);
       setMembers(response.data);
     } catch (err) {
       console.error(err);
@@ -37,7 +41,8 @@ export default function App() {
 
     setLoading(true);
     try {
-      await axios.post('http://localhost:8080/api/members', { name });
+      // API_BASE_URL 변수 적용
+      await axios.post(`${API_BASE_URL}/api/members`, { name });
       setName(''); // 입력창 초기화
       fetchMembers(); // 추가 후 목록 갱신
     } catch (err) {
