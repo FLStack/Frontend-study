@@ -7,7 +7,7 @@ interface Member {
   name: string;
 }
 
-// 환경 변수 불러오기 (Vercel 환경 변수가 없으면 로컬 localhost:8080을 기본값으로 사용)
+// 환경 변수 불러오기
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
 export default function App() {
@@ -21,7 +21,6 @@ export default function App() {
     setLoading(true);
     setError(null);
     try {
-      // API_BASE_URL 변수 적용
       const response = await axios.get<Member[]>(`${API_BASE_URL}/api/members`);
       setMembers(response.data);
     } catch (err) {
@@ -41,13 +40,28 @@ export default function App() {
 
     setLoading(true);
     try {
-      // API_BASE_URL 변수 적용
       await axios.post(`${API_BASE_URL}/api/members`, { name });
-      setName(''); // 입력창 초기화
-      fetchMembers(); // 추가 후 목록 갱신
+      setName('');
+      fetchMembers();
     } catch (err) {
       console.error(err);
       alert('DB 저장 실패!');
+      setLoading(false);
+    }
+  };
+
+  // 3. DB에서 Member 삭제하기 (추가된 기능)
+  const deleteMember = async (id?: number) => {
+    if (!id) return;
+    if (!confirm('정말 삭제하시겠습니까?')) return;
+
+    setLoading(true);
+    try {
+      await axios.delete(`${API_BASE_URL}/api/members/${id}`);
+      fetchMembers(); // 삭제 후 목록 다시 불러오기
+    } catch (err) {
+      console.error(err);
+      alert('삭제 실패!');
       setLoading(false);
     }
   };
@@ -68,7 +82,7 @@ export default function App() {
           <span className="inline-block px-3 py-1 text-xs font-semibold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 rounded-full mb-2">
             React + Spring Boot + Supabase
           </span>
-          <h1 className="text-2xl font-bold text-slate-100">테스트</h1>
+          <h1 className="text-2xl font-bold text-slate-100">개발 테스트</h1>
           <p className="text-sm text-slate-400 mt-1">TypeScript & Tailwind CSS</p>
         </div>
 
@@ -118,8 +132,18 @@ export default function App() {
                     key={member.id}
                     className="flex justify-between items-center bg-slate-900 px-3 py-2 rounded-lg border border-slate-800 text-sm"
                   >
-                    <span className="text-indigo-400 font-mono text-xs">ID: {member.id}</span>
-                    <span className="font-medium text-slate-200">{member.name}</span>
+                    <div className="flex items-center space-x-3">
+                      <span className="text-indigo-400 font-mono text-xs">ID: {member.id}</span>
+                      <span className="font-medium text-slate-200">{member.name}</span>
+                    </div>
+
+                    {/* 삭제 버튼 추가 */}
+                    <button
+                      onClick={() => deleteMember(member.id)}
+                      className="px-2 py-1 text-xs text-red-400 hover:text-red-300 hover:bg-red-950/50 rounded border border-red-900/50 transition-colors"
+                    >
+                      삭제
+                    </button>
                   </li>
                 ))}
               </ul>
