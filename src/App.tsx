@@ -82,7 +82,7 @@ export default function App() {
           <span className="inline-block px-3 py-1 text-xs font-semibold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 rounded-full mb-2">
             React + Spring Boot + Supabase
           </span>
-          <h1 className="text-2xl font-bold text-slate-100">개발 테스트</h1>
+          <h1 className="text-2xl font-bold text-slate-100">데스노트</h1>
           <p className="text-sm text-slate-400 mt-1">TypeScript & Tailwind CSS</p>
         </div>
 
